@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  db:
+    image: timescale/timescaledb:latest-pg14
+    environment:
+      POSTGRES_DB: corrosion
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: ["5432:5432"]
+    volumes:
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api:
+    build: ./api
+    ports: ["8000:8000"]
+    depends_on: [db]
+
+  vision:
+    build: ./vision
+    ports: ["8001:8001"]
+
+  ui:
+    build: ./ui
+    ports: ["3000:3000"]
+    depends_on: [api]
